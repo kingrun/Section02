@@ -1,13 +1,20 @@
-﻿#include <iostream> //prideti komandu biblioteka pagal nutylejima
+﻿/* This is the console executable, that makes use of the FKartuves klase 
+This acts as the view in a MVC patttern, and is responsible for all user interaction. 
+For game logic see the Fkartus class
+*/
+
+#include <iostream> //prideti komandu biblioteka pagal nutylejima
 #include <string> //prideti veiksma operatoriui >>
 #include "FKartuves.h"
 
+using FText = std::string;
+using int32 = int;
 // namespace priskiria pagrindine komanda std, kad nenaudot kartu su std::cout ir std::cin ir t.t.
 
 void SpausdintiPradzia();
 void Zaisti();
 bool KlaustiArKartoti();
-std::string GautSpejima();
+FText GautSpejima();
 
 FKartuves KZaidimas; // sukurti nauja zaidima
 
@@ -19,6 +26,7 @@ int main()
 	do {
 		SpausdintiPradzia();
 		Zaisti();
+		// TODO pridezi zaidima summary
 		bKartotZaidima = KlaustiArKartoti();
 	} 
 	while (bKartotZaidima);
@@ -28,9 +36,9 @@ int main()
 // zaidimo pristatymas
 void SpausdintiPradzia() 
 {
-	constexpr int ZODZIO_ILGIS = 5;
+	
 	std::cout << "Kartuves\n";
-	std::cout << "Atspek zodi is " << ZODZIO_ILGIS;
+	std::cout << "Atspek zodi is " << KZaidimas.GautiZodzioIlgi();
 	std::cout << " raidziu!\n";
 	std::cout << std::endl;
 	return;
@@ -39,24 +47,29 @@ void SpausdintiPradzia()
 void Zaisti()
 {
 	KZaidimas.Reset();
-	int MaxBandymai = KZaidimas.GautMaxBandymu();
+	int32 MaxBandymai = KZaidimas.GautMaxBandymu();
 
 	// kartoti nurodyta kieki kartu
-	for (int count = 1; count <= MaxBandymai; count++)
+	for (int32 count = 1; count <= MaxBandymai; count++)
 	{
-		std::string Spejimas = GautSpejima();
+		FText Spejimas = GautSpejima(); //TODO tikrinti teisingus spejimus
 		//rodyt spejima ekrane
+		FKartuviuSkaicius KartuviuSkaicius = KZaidimas.PateiktSpejima(Spejimas);
+		//pateikti teisinga spejima i ekrana, parodyti kiek teisingu ir neteisingu spejimu yra
+		std::cout << "Teisingi = " << KartuviuSkaicius.Geras;
+		std::cout << ". Neteisingi = " << KartuviuSkaicius.Blogas << std::endl;
 		std::cout << "Jusu spejimas: " << Spejimas << std::endl;
 		std::cout << std::endl;
 	}
 }
+//TODO padaryti summary
 
-std::string GautSpejima()
+FText GautSpejima()
 {
-	int ManoEsamasBandymas = KZaidimas.TurimiBandymai();
+	int32 ManoEsamasBandymas = KZaidimas.TurimiBandymai();
 	//gaunam spejima is zaidejo
 	std::cout << "Spejimas " << ManoEsamasBandymas << ". Iveskite spejima: "; 
-	std::string Spejimas = "";
+	FText Spejimas = "";
 	std::getline(std::cin, Spejimas);
 	return Spejimas;
 }
@@ -64,7 +77,7 @@ std::string GautSpejima()
 bool KlaustiArKartoti()
 {
 	std::cout << "Ar norite kartoti zaidima? (T/N)";
-	std::string Atsakas = "";
+	FText Atsakas = "";
 	std::getline(std::cin, Atsakas);
 
 	return (Atsakas[0] == 't') || (Atsakas[0] == 'T');
